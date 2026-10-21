@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practice student registration portal built with HTML, CSS and JavaScript.">
+  <title>Student Registration Portal | UNIBEN Practice Project</title>
+  <style>
+    :root {
+      --wine: #8b1726;
+      --wine-dark: #64101c;
+      --wine-pale: #fff0f2;
+      --ink: #202333;
+      --muted: #6c7282;
+      --line: #e4e7ee;
+      --surface: #ffffff;
+      --page: #f6f7fb;
+      --green: #16794b;
+      --shadow: 0 18px 55px rgba(32, 35, 51, .08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; }
+    button, input, select { font: inherit; }
+    .topbar { background: var(--wine-dark); color: #fff; padding: 10px 20px; text-align: center; font-size: .82rem; letter-spacing: .02em; }
+    .site-header { background: var(--surface); border-bottom: 1px solid var(--line); }
+    .header-inner { max-width: 1120px; margin: auto; padding: 18px 24px; display: flex; align-items: center; gap: 14px; }
+    .crest { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 14px; display: grid; place-items: center; color: white; background: var(--wine); font-weight: 800; letter-spacing: -.06em; box-shadow: 0 6px 16px #8b172633; }
+    .brand-name { font-weight: 800; font-size: 1.05rem; letter-spacing: -.02em; }
+    .brand-subtitle { color: var(--muted); font-size: .8rem; margin-top: 1px; }
+    .demo-tag { margin-left: auto; border: 1px solid #f0c7cd; color: var(--wine); background: var(--wine-pale); border-radius: 999px; padding: 6px 10px; font-size: .74rem; font-weight: 750; white-space: nowrap; }
+    main { max-width: 1120px; margin: 0 auto; padding: 38px 24px 54px; }
+    .intro { margin-bottom: 26px; }
+    .eyebrow { color: var(--wine); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.55rem); letter-spacing: -.055em; line-height: 1.15; margin: 8px 0 12px; }
+    .intro p { color: var(--muted); max-width: 650px; margin: 0; }
+    .notice { display: flex; align-items: flex-start; gap: 10px; background: #fff9e9; color: #785518; border: 1px solid #f2dfae; border-radius: 12px; padding: 13px 15px; margin: 22px 0; font-size: .88rem; }
+    .notice strong { display: block; margin-bottom: 2px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(250px, .8fr); gap: 22px; align-items: start; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+    .card-head { padding: 22px 24px; border-bottom: 1px solid var(--line); }
+    .card-head h2 { font-size: 1.1rem; margin: 0 0 4px; letter-spacing: -.025em; }
+    .card-head p { margin: 0; color: var(--muted); font-size: .86rem; }
+    form { padding: 24px; }
+    .section-label { font-size: .76rem; color: var(--wine); text-transform: uppercase; letter-spacing: .09em; font-weight: 800; margin: 2px 0 16px; }
+    .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px 16px; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    label { display: block; font-size: .83rem; font-weight: 700; margin-bottom: 7px; }
+    .required { color: var(--wine); }
+    input, select { width: 100%; min-height: 46px; border: 1px solid #d8dce6; border-radius: 9px; padding: 10px 12px; color: var(--ink); background: white; outline: none; transition: border-color .15s, box-shadow .15s; }
+    input::placeholder { color: #a0a5b2; }
+    input:focus, select:focus { border-color: var(--wine); box-shadow: 0 0 0 3px #8b17261a; }
+    .hint { margin-top: 6px; color: var(--muted); font-size: .75rem; }
+    .check-row { display: flex; align-items: flex-start; gap: 10px; margin: 21px 0; color: var(--muted); font-size: .82rem; }
+    .check-row input { width: 16px; min-height: 16px; margin-top: 3px; accent-color: var(--wine); flex: 0 0 auto; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn { border: 0; border-radius: 9px; padding: 12px 17px; cursor: pointer; font-weight: 750; font-size: .88rem; transition: transform .15s, background .15s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { color: white; background: var(--wine); flex: 1; }
+    .btn-primary:hover { background: var(--wine-dark); }
+    .btn-secondary { color: var(--ink); background: #f0f1f5; }
+    .message { display: none; border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; font-size: .86rem; }
+    .message.success { display: block; color: #12613c; background: #eaf8f0; border: 1px solid #bde8ce; }
+    .message.error { display: block; color: #8a1b2a; background: #fff0f2; border: 1px solid #f0c7cd; }
+    .side-card { padding: 22px; }
+    .side-card h2 { margin: 0 0 6px; font-size: 1rem; }
+    .side-card > p { margin: 0; color: var(--muted); font-size: .83rem; }
+    .steps { list-style: none; padding: 0; margin: 20px 0 0; }
+    .steps li { display: flex; gap: 12px; margin: 17px 0; align-items: flex-start; }
+    .step-num { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 9px; background: var(--wine-pale); color: var(--wine); font-weight: 800; font-size: .8rem; flex: 0 0 auto; }
+    .steps strong { display: block; font-size: .84rem; }
+    .steps span:last-child { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
+    .mini-stat { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 17px; display: flex; justify-content: space-between; gap: 10px; font-size: .83rem; }
+    .mini-stat span { color: var(--muted); }
+    .records { margin-top: 24px; }
+    .records-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px; }
+    .records-head h2 { margin: 0; font-size: 1.02rem; }
+    .record-count { background: var(--wine-pale); color: var(--wine); padding: 4px 9px; border-radius: 999px; font-size: .75rem; font-weight: 800; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; min-width: 580px; text-align: left; }
+    th, td { padding: 13px 18px; border-top: 1px solid var(--line); font-size: .82rem; }
+    th { background: #fafbfc; color: var(--muted); font-size: .73rem; text-transform: uppercase; letter-spacing: .06em; }
+    .empty { padding: 25px; color: var(--muted); text-align: center; font-size: .85rem; }
+    .footer { padding: 22px 24px; text-align: center; color: var(--muted); font-size: .77rem; }
+    @media (max-width: 760px) {
+      main { padding: 28px 16px 40px; }
+      .header-inner { padding: 15px 16px; }
+      .layout { grid-template-columns: 1fr; }
+      .side-card { order: -1; }
+      .card-head, form { padding: 19px; }
+    }
+    @media (max-width: 480px) {
+      .fields { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .demo-tag { font-size: .65rem; padding: 5px 7px; }
+      .brand-name { font-size: .95rem; }
+      .brand-subtitle { font-size: .72rem; }
+      .crest { width: 42px; height: 42px; flex-basis: 42px; }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">UNIVERSITY RECRUITMENT PRACTICE PROJECT · HTML · CSS · JAVASCRIPT</div>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="crest" aria-hidden="true">UN</div>
+      <div>
+        <div class="brand-name">University of Benin</div>
+        <div class="brand-subtitle">Student Services · Registration Portal</div>
+      </div>
+      <div class="demo-tag">DEMO PROJECT</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow">Student services</div>
+      <h1>Student Registration Portal</h1>
+      <p>Enter the student's information below to create a registration record. This sample demonstrates a responsive form, basic validation and JavaScript-powered page updates.</p>
+    </section>
+
+    <div class="notice" role="note">
+      <span aria-hidden="true">ⓘ</span>
+      <div><strong>Practice environment only</strong>This is an independent demonstration project, not an official University of Benin service. Do not enter real personal information. Records are stored only in this browser.</div>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <div class="card-head">
+          <h2>Registration details</h2>
+          <p>Fields marked with <span class="required">*</span> are required.</p>
+        </div>
+        <form id="registration-form" novalidate>
+          <div id="form-message" class="message" role="status" aria-live="polite"></div>
+          <div class="section-label">Personal information</div>
+          <div class="fields">
+            <div class="field">
+              <label for="full-name">Full name <span class="required">*</span></label>
+              <input id="full-name" name="fullName" autocomplete="name" placeholder="e.g. Ada Okafor" required minlength="3">
+            </div>
+            <div class="field">
+              <label for="email">Email address <span class="required">*</span></label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+            </div>
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="e.g. 08012345678" pattern="[0-9+() -]{7,20}">
+            </div>
+            <div class="field">
+              <label for="matric-number">Matriculation number <span class="required">*</span></label>
+              <input id="matric-number" name="matricNumber" placeholder="e.g. CSC/2026/001" required minlength="4">
+            </div>
+            <div class="field full">
+              <label for="faculty">Faculty <span class="required">*</span></label>
+              <select id="faculty" name="faculty" required>
+                <option value="">Select a faculty</option>
+                <option>Physical Sciences</option>
+                <option>Life Sciences</option>
+                <option>Engineering</option>
+                <option>Education</option>
+                <option>Social Sciences</option>
+                <option>Management Sciences</option>
+                <option>Arts</option>
+                <option>Law</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="department">Department <span class="required">*</span></label>
+              <input id="department" name="department" placeholder="e.g. Computer Science" required>
+            </div>
+            <div class="field">
+              <label for="level">Current level <span class="required">*</span></label>
+              <select id="level" name="level" required>
+                <option value="">Select level</option>
+                <option>100 Level</option><option>200 Level</option><option>300 Level</option>
+                <option>400 Level</option><option>500 Level</option><option>600 Level</option>
+                <option>Postgraduate</option>
+              </select>
+            </div>
+          </div>
+          <label class="check-row" for="confirm-demo">
+            <input id="confirm-demo" type="checkbox" required>
+            <span>I understand this is a demonstration and I will use fictional details only.</span>
+          </label>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Submit registration</button>
+            <button class="btn btn-secondary" type="reset">Clear form</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card side-card">
+        <h2>How it works</h2>
+        <p>A small example of common frontend development tasks.</p>
+        <ol class="steps">
+          <li><span class="step-num">1</span><div><strong>Enter details</strong><span>HTML form controls collect the information.</span></div></li>
+          <li><span class="step-num">2</span><div><strong>Validate inputs</strong><span>JavaScript checks required fields and email format.</span></div></li>
+          <li><span class="step-num">3</span><div><strong>Show the result</strong><span>A new row appears in the registration table.</span></div></li>
+        </ol>
+        <div class="mini-stat"><span>Technology</span><strong>HTML · CSS · JS</strong></div>
+        <div class="mini-stat"><span>Server required</span><strong>No</strong></div>
+        <div class="mini-stat"><span>Data storage</span><strong>This browser only</strong></div>
+      </aside>
+    </div>
+
+    <section class="card records">
+      <div class="records-head">
+        <h2>Registration records</h2>
+        <span class="record-count" id="record-count">0 records</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student</th><th>Matric number</th><th>Department</th><th>Level</th></tr></thead>
+          <tbody id="records-body"></tbody>
+        </table>
+        <div class="empty" id="empty-state">No registrations yet. Submit the form above to add a sample record.</div>
+      </div>
+    </section>
+    <div class="footer">Built for recruitment exercise practice · Frontend demonstration only</div>
+  </main>
+
+  <script>
+    const form = document.getElementById('registration-form');
+    const message = document.getElementById('form-message');
+    const recordsBody = document.getElementById('records-body');
+    const emptyState = document.getElementById('empty-state');
+    const recordCount = document.getElementById('record-count');
+    const STORAGE_KEY = 'unibenPracticeRegistrations';
+
+    function getRecords() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveRecords(records) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function renderRecords() {
+      const records = getRecords();
+      recordsBody.replaceChildren();
+      emptyState.hidden = records.length > 0;
+      recordCount.textContent = records.length + (records.length === 1 ? ' record' : ' records');
+
+      records.slice().reverse().forEach(function (record) {
+        const row = document.createElement('tr');
+        [record.fullName, record.matricNumber, record.department, record.level].forEach(function (value) {
+          const cell = document.createElement('td');
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+        recordsBody.appendChild(row);
+      });
+    }
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = 'message ' + type;
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        showMessage('Please complete all required fields correctly before submitting.', 'error');
+        return;
+      }
+
+      const formData = new FormData(form);
+      const record = {
+        fullName: String(formData.get('fullName')).trim(),
+        email: String(formData.get('email')).trim(),
+        phone: String(formData.get('phone') || '').trim(),
+        matricNumber: String(formData.get('matricNumber')).trim(),
+        faculty: String(formData.get('faculty')),
+        department: String(formData.get('department')).trim(),
+        level: String(formData.get('level'))
+      };
+
+      const records = getRecords();
+      const duplicate = records.some(function (item) {
+        return item.matricNumber.toLowerCase() === record.matricNumber.toLowerCase();
+      });
+
+      if (duplicate) {
+        showMessage('That matriculation number is already in the demo records. Please use a different one.', 'error');
+        return;
+      }
+
+      records.push(record);
+      const saved = saveRecords(records);
+      renderRecords();
+      showMessage(
+        saved
+          ? 'Registration added successfully! The sample record is saved in this browser.'
+          : 'Registration added for this page session, but browser storage is unavailable.',
+        'success'
+      );
+      form.reset();
+    });
+
+    form.addEventListener('reset', function () {
+      message.className = 'message';
+      message.textContent = '';
+    });
+
+    renderRecords();
+  </script>
+</body>
+</html>
