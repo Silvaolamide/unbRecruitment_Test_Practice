@@ -75,7 +75,11 @@
     .records { margin-top: 24px; }
     .records-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px; }
     .records-head h2 { margin: 0; font-size: 1.02rem; }
-    .record-count { background: var(--wine-pale); color: var(--wine); padding: 4px 9px; border-radius: 999px; font-size: .75rem; font-weight: 800; }
+    .record-count { background: var(--wine-pale); color: var(--wine); padding: 4px 9px; border-radius: 999px; font-size: .75rem; font-weight: 800; white-space: nowrap; }
+    .search-wrap { padding: 0 22px 18px; }
+    .search-wrap input { width: 100%; }
+    .btn-delete { background: #fff0f2; color: var(--wine); border: 1px solid #f0c7cd; padding: 7px 10px; font-size: .78rem; }
+    .btn-delete:hover { background: #ffe0e5; }
     .table-wrap { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; min-width: 580px; text-align: left; }
     th, td { padding: 13px 18px; border-top: 1px solid var(--line); font-size: .82rem; }
@@ -211,9 +215,12 @@
         <h2>Registration records</h2>
         <span class="record-count" id="record-count">0 records</span>
       </div>
+      <div class="search-wrap">
+        <input type="search" id="student-search" placeholder="Search by name, matric number, department or level..." aria-label="Search student records">
+      </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Student</th><th>Matric number</th><th>Department</th><th>Level</th></tr></thead>
+          <thead><tr><th>Student</th><th>Matric number</th><th>Department</th><th>Level</th><th>Action</th></tr></thead>
           <tbody id="records-body"></tbody>
         </table>
         <div class="empty" id="empty-state">No registrations yet. Submit the form above to add a sample record.</div>
@@ -228,6 +235,7 @@
     const recordsBody = document.getElementById('records-body');
     const emptyState = document.getElementById('empty-state');
     const recordCount = document.getElementById('record-count');
+    const searchInput = document.getElementById('student-search');
     const STORAGE_KEY = 'unibenPracticeRegistrations';
 
     function getRecords() {
@@ -250,20 +258,66 @@
 
     function renderRecords() {
       const records = getRecords();
-      recordsBody.replaceChildren();
-      emptyState.hidden = records.length > 0;
-      recordCount.textContent = records.length + (records.length === 1 ? ' record' : ' records');
+      const query = searchInput.value.trim().toLowerCase();
+      const filteredRecords = records.filter(function (record) {
+        return [record.fullName, record.matricNumber, record.department, record.level]
+          .some(function (value) {
+            return String(value || '').toLowerCase().includes(query);
+          });
+      });
 
-      records.slice().reverse().forEach(function (record) {
+      recordsBody.replaceChildren();
+      emptyState.hidden = filteredRecords.length > 0;
+      emptyState.textContent = query && filteredRecords.length === 0
+        ? 'No records match your search. Try another name or keyword.'
+        : 'No registrations yet. Submit the form above to add a sample record.';
+      recordCount.textContent = query
+        ? filteredRecords.length + ' of ' + records.length + ' records'
+        : records.length + (records.length === 1 ? ' record' : ' records');
+
+      filteredRecords.slice().reverse().forEach(function (record) {
         const row = document.createElement('tr');
         [record.fullName, record.matricNumber, record.department, record.level].forEach(function (value) {
           const cell = document.createElement('td');
           cell.textContent = value;
           row.appendChild(cell);
         });
+
+        const actionCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'btn btn-delete';
+        deleteButton.textContent = 'Delete';
+        deleteButton.setAttribute('aria-label', 'Delete record for ' + record.fullName);
+        deleteButton.addEventListener('click', function () {
+          deleteRecord(record.matricNumber);
+        });
+        actionCell.appendChild(deleteButton);
+        row.appendChild(actionCell);
         recordsBody.appendChild(row);
       });
     }
+
+    function deleteRecord(matricNumber) {
+      const record = getRecords().find(function (item) {
+        return item.matricNumber.toLowerCase() === matricNumber.toLowerCase();
+      });
+      if (!record) return;
+
+      if (!window.confirm('Delete the registration for ' + record.fullName + '?')) return;
+
+      const updatedRecords = getRecords().filter(function (item) {
+        return item.matricNumber.toLowerCase() !== matricNumber.toLowerCase();
+      });
+      const saved = saveRecords(updatedRecords);
+      renderRecords();
+      showMessage(
+        saved ? 'Registration deleted successfully.' : 'Could not save the change to browser storage.',
+        saved ? 'success' : 'error'
+      );
+    }
+
+    searchInput.addEventListener('input', renderRecords);
 
     function showMessage(text, type) {
       message.textContent = text;
